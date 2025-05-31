@@ -119,6 +119,8 @@ instance IStateActivity RunStateData ToolsCallEventData where
       genCommand dat "pty-connect" = genPtyConnectCommand dat
       genCommand dat "pty-bash"    = genPtyConnectCommand dat
       genCommand dat "pty-ssh"     = genPtyConnectCommand dat
+      genCommand dat "pty-cabal"   = genPtyConnectCommand dat
+      genCommand dat "pty-stack"   = genPtyConnectCommand dat
       genCommand dat "pty-ghci"    = genPtyConnectCommand dat
       genCommand dat "pty-message" = do
         resQ <- view DM.responseQueueDomainData <$> lift ask
