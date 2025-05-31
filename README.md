@@ -1,6 +1,6 @@
 # pms-domain-service
 
-`pms-domain-service` is one of the internal packages that make up the `pty-mcp-server` project.  
+`pms-domain-service` is one of the internal packages that make up the [`pty-mcp-server`](https://github.com/phoityne/pty-mcp-server) project.  
 It defines the state-managed core application logic, serving as the foundation of the system’s behavior and lifecycle management.
 
 This package models the application as an explicit state machine, where domain operations are defined in terms of transitions between well-typed states.  
@@ -14,9 +14,10 @@ By isolating this logic from UI and infrastructure concerns, `pms-domain-service
 ---
 
 ## Package Structure
-
+![Package Structure](./docs/41-1.png)
 ---
 
 ## Module Structure
+![Module Structure](./docs/41-2.png)
 
 ---
