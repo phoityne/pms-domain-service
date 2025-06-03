@@ -14,10 +14,10 @@ By isolating this logic from UI and infrastructure concerns, `pms-domain-service
 ---
 
 ## Package Structure
-![Package Structure](./docs/41-1.png)
+![Package Structure](https://raw.githubusercontent.com/phoityne/pms-domain-service/main/docs/41-1.png)
 ---
 
 ## Module Structure
-![Module Structure](./docs/41-2.png)
+![Module Structure](https://raw.githubusercontent.com/phoityne/pms-domain-service/main/docs/41-2.png)
 
 ---

@@ -77,9 +77,9 @@ tearDown _ = do
 --
 run :: SpecWith SpecContext
 run = do
-  describe "runApp" $ do
-    context "when AppData default" $ do
-      it "should be run" $ \ctx -> do 
+  describe "runWithAppData" $ do
+    context "when McpInitializeRequest" $ do
+      it "should be initialized." $ \ctx -> do 
         putStrLn "[INFO] EXECUTING THE FIRST TEST."
 
         let domDat = ctx^.domainDataSpecContext
@@ -87,15 +87,16 @@ run = do
             reqQ   = domDat^.DM.requestQueueDomainData
             resQ   = domDat^.DM.responseQueueDomainData
             args   = DM.McpInitializeRequest def
-            expect = 7
+            expect = ""
             
         thId <- async $ SUT.runWithAppData appDat domDat
 
         STM.atomically $ STM.writeTQueue reqQ args
 
-        actual <- STM.atomically $ STM.readTQueue resQ
-        putStrLn $ show actual
-        -- actual `shouldBe` expect
+        (DM.McpInitializeResponse dat) <- STM.atomically $ STM.readTQueue resQ
+
+        let actual = dat^.DM.jsonrpcMcpInitializeResponseData^.DM.jsonrpcJsonRpcRequest
+        actual `shouldBe` expect
 
         cancel thId
 
