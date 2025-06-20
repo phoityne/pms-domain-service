@@ -37,7 +37,7 @@ instance IStateActivity StopStateData TransitEventData
 
 -- |
 --
-instance IStateActivity StopStateData InitEventData
+instance IStateActivity StopStateData InitializeEventData
   -- @see default implementation in Type module.
 
 -- |

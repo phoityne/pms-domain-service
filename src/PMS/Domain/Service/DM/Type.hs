@@ -29,7 +29,7 @@ data EntryEventData       = EntryEventData deriving (Show)
 data ExitEventData        = ExitEventData  deriving (Show)
 data TransitEventData     = TransitEventData StateTransition deriving (Show)
 -- doActibity
-data InitEventData        = InitEventData DM.McpInitializeRequestData deriving (Show)
+data InitializeEventData        = InitializeEventData DM.McpInitializeRequestData deriving (Show)
 data InitializedEventData = InitializedEventData DM.McpInitializedNotificationData deriving (Show)
 data ToolsListEventData   = ToolsListEventData DM.McpToolsListRequestData deriving (Show)
 data ToolsCallEventData   = ToolsCallEventData DM.McpToolsCallRequestData deriving (Show)
@@ -44,7 +44,7 @@ data Event r where
   ExitEvent        :: Event ExitEventData
   TransitEvent     :: TransitEventData     -> Event TransitEventData
   -- doActibity
-  InitEvent        :: InitEventData        -> Event InitEventData
+  InitializeEvent  :: InitializeEventData  -> Event InitializeEventData
   InitializedEvent :: InitializedEventData -> Event InitializedEventData
   ToolsListEvent   :: ToolsListEventData   -> Event ToolsListEventData
   ToolsCallEvent   :: ToolsCallEventData   -> Event ToolsCallEventData

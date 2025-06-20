@@ -3,7 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module PMS.Domain.Service.DS.State.Start.Init where
+module PMS.Domain.Service.DS.State.Start.Initialize where
 
 import Data.Default
 import Control.Monad.IO.Class
@@ -22,8 +22,8 @@ import PMS.Domain.Service.DM.Type
 
 -- |
 --
-instance IStateActivity StartStateData InitEventData where
-  action s (InitEvent r@(InitEventData dat)) = do
+instance IStateActivity StartStateData InitializeEventData where
+  action s (InitializeEvent r@(InitializeEventData dat)) = do
     $logDebugS DM._LOGTAG "Start init called."
     $logDebugS DM._LOGTAG (T.pack (show s))
     $logDebugS DM._LOGTAG (T.pack (show r))

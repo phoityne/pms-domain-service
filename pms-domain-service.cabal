@@ -56,7 +56,7 @@ extra-doc-files:    README.md,
 
 library
     -- Import common warning flags.
-    ghc-options: -Wall -Wno-orphans -Wno-x-partial -Wno-gadt-mono-local-binds
+    ghc-options: -Wall -threaded -Wno-orphans -Wno-x-partial -Wno-gadt-mono-local-binds
 
     -- Modules exported by the library.
     exposed-modules:  PMS.Domain.Service.DM.Type,
@@ -66,9 +66,12 @@ library
                       PMS.Domain.Service.DM.TH,
                       PMS.Domain.Service.DS.Utility,
                       PMS.Domain.Service.DS.State.Run,
+                      PMS.Domain.Service.DS.State.Run.ToolsList,
+                      PMS.Domain.Service.DS.State.Run.ToolsCall,
                       PMS.Domain.Service.DS.State.Start,
                       PMS.Domain.Service.DS.State.Start.Disconnect,
-                      PMS.Domain.Service.DS.State.Start.Init,
+                      PMS.Domain.Service.DS.State.Start.Initialize,
+                      PMS.Domain.Service.DS.State.Start.Initialized,
                       PMS.Domain.Service.DS.State.Start.Launch,
                       PMS.Domain.Service.DS.State.Start.Terminate,
                       PMS.Domain.Service.DS.State.Stop
@@ -107,7 +110,7 @@ library
 
 test-suite pms-domain-service-test
     -- Import common warning flags.
-    ghc-options: -Wall -Wno-orphans -Wno-x-partial
+    ghc-options: -Wall -threaded -Wno-orphans -Wno-x-partial
 
     -- Base language which the package is written in.
     default-language: GHC2021

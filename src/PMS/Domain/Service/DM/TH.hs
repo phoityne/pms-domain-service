@@ -38,7 +38,7 @@ import PMS.Domain.Service.DS.Utility
 
 [InstanceD Nothing [] (AppT (ConT Type.IAppState) (ConT Type.StartState))
   [FunD Type.doActivity
-    [Clause [VarP s_8,ConP Type.EventW [AsP r_9 (RecP Type.InitEvent [])]] (NormalB (AppE (AppE (VarE Type.action) (VarE s_8)) (VarE r_9))) [],
+    [Clause [VarP s_8,ConP Type.EventW [AsP r_9 (RecP Type.InitializeEvent [])]] (NormalB (AppE (AppE (VarE Type.action) (VarE s_8)) (VarE r_9))) [],
      Clause [VarP s_10,ConP Type.EventW [AsP r_11 (RecP Type.TerminateEvent [])]] (NormalB (AppE (AppE (VarE Type.action) (VarE s_10)) (VarE r_11))) []
     ]
   ]
@@ -55,11 +55,11 @@ import PMS.Domain.Service.DS.Utility
 :{
  runQ [d|
    data Event r where
-     InitEvent :: Event InitEvent
+     InitializeEvent :: Event InitializeEvent
    |]
 :}
 
-[DataD [] Event_12 [PlainTV r_14] Nothing [GadtC [InitEvent_13] [] (AppT (ConT Event_12) (ConT Type.InitEvent))] []]
+[DataD [] Event_12 [PlainTV r_14] Nothing [GadtC [InitializeEvent_13] [] (AppT (ConT Event_12) (ConT Type.InitializeEvent))] []]
 
 -}
 
