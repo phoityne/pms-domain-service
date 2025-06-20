@@ -29,9 +29,9 @@ instance IStateActivity RunStateData ToolsListEventData where
     $logDebugS DM._LOGTAG (T.pack (show s))
     $logDebugS DM._LOGTAG (T.pack (show r))
 
-    scriptsDir <- view DM.scriptsDirDomainData <$> lift ask
+    toolsDir <- view DM.toolsDirDomainData <$> lift ask
 
-    let toolFile = scriptsDir </> DM._TOOLS_LIST_FILE
+    let toolFile = toolsDir </> DM._TOOLS_LIST_FILE
     cont <- U.readFile toolFile
     let result = DM.McpToolsListResponseResult $ DM.RawJsonByteString cont
         jsonRpc = dat^.DM.jsonrpcMcpToolsListRequestData
