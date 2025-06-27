@@ -3,7 +3,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module PMS.Domain.Service.DS.State.Run.ToolsList where
+module PMS.Domain.Service.DS.State.Run.PromptsList where
 
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Class
@@ -27,18 +27,18 @@ import qualified PMS.Domain.Service.DS.Utility as U
 
 -- |
 --
-instance IStateActivity RunStateData ToolsListEventData where
-  action _ (ToolsListEvent (ToolsListEventData dat)) = flip catchError errHdl $ do
-    $logDebugS DM._LOGTAG "Run ToolsListEvent called."
+instance IStateActivity RunStateData PromptsListEventData where
+  action _ (PromptsListEvent (PromptsListEventData dat)) = flip catchError errHdl $ do
+    $logDebugS DM._LOGTAG "Run PromptsListEvent called."
 
-    toolsDir <- view DM.toolsDirDomainData <$> lift ask
+    promptsDir <- view DM.promptsDirDomainData <$> lift ask
 
-    let toolFile = toolsDir </> DM._TOOLS_LIST_FILE
-    exists <- liftIO $ doesFileExist toolFile
+    let promptsFile = promptsDir </> DM._PROMPTS_LIST_FILE
+    exists <- liftIO $ doesFileExist promptsFile
     cont <- if exists
-              then U.readFile toolFile
+              then U.readFile promptsFile
               else do
-                $logInfoS DM._LOGTAG $ T.pack $ "file not found." ++ toolFile
+                $logInfoS DM._LOGTAG $ T.pack $ "file not found." ++ promptsFile
                 return "[]"
 
     response cont
@@ -53,10 +53,10 @@ instance IStateActivity RunStateData ToolsListEventData where
 
       response :: BL.ByteString -> AppContext ()
       response cont = do
-        let result = DM.McpToolsListResponseResult $ DM.RawJsonByteString cont
-            jsonRpc = dat^.DM.jsonrpcMcpToolsListRequestData
-            resDat = DM.McpToolsListResponseData jsonRpc result
-            res = DM.McpToolsListResponse resDat
+        let result = DM.McpPromptsListResponseResult $ DM.RawJsonByteString cont
+            jsonRpc = dat^.DM.jsonrpcMcpPromptsListRequestData
+            resDat = DM.McpPromptsListResponseData jsonRpc result
+            res = DM.McpPromptsListResponse resDat
 
         $logDebugS DM._LOGTAG $ T.pack $ show res
 

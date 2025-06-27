@@ -20,7 +20,7 @@ name:               pms-domain-service
 -- PVP summary:     +-+------- breaking API changes
 --                  | | +----- non-breaking API additions
 --                  | | | +--- code changes with no API change
-version:            0.0.2.0
+version:            0.0.3.0
 
 -- A short (one-line) description of the package.
 synopsis:           pms-domain-service
@@ -68,12 +68,11 @@ library
                       PMS.Domain.Service.DS.State.Run,
                       PMS.Domain.Service.DS.State.Run.ToolsList,
                       PMS.Domain.Service.DS.State.Run.ToolsCall,
+                      PMS.Domain.Service.DS.State.Run.PromptsList,
+                      PMS.Domain.Service.DS.State.Run.PromptsGet,
                       PMS.Domain.Service.DS.State.Start,
-                      PMS.Domain.Service.DS.State.Start.Disconnect,
                       PMS.Domain.Service.DS.State.Start.Initialize,
                       PMS.Domain.Service.DS.State.Start.Initialized,
-                      PMS.Domain.Service.DS.State.Start.Launch,
-                      PMS.Domain.Service.DS.State.Start.Terminate,
                       PMS.Domain.Service.DS.State.Stop
 
     -- Modules included in this library but not exported.
@@ -99,6 +98,8 @@ library
                       filepath,
                       directory,
                       aeson,
+                      unordered-containers,
+                      mustache,
                       pms-domain-model
 
     -- Directories containing source files.

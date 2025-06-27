@@ -6,16 +6,17 @@
 module PMS.Domain.Service.DS.State.Start where
 
 import Control.Monad.Logger
+import qualified Data.Text as T
+import Control.Lens
 
+import qualified PMS.Domain.Model.DM.Type as DM
 import qualified PMS.Domain.Model.DM.Constant as DM
 
+import PMS.Domain.Service.DS.Utility
 import PMS.Domain.Service.DM.Type
 import PMS.Domain.Service.DM.TH
 import PMS.Domain.Service.DS.State.Start.Initialize()
 import PMS.Domain.Service.DS.State.Start.Initialized()
-import PMS.Domain.Service.DS.State.Start.Launch()
-import PMS.Domain.Service.DS.State.Start.Disconnect()
-import PMS.Domain.Service.DS.State.Start.Terminate()
 
 {-
 -- |
@@ -36,14 +37,14 @@ instanceTH_IAppState ''StartStateData
 instance IStateActivity StartStateData EntryEventData where
   action _ _ = do
     $logDebugS DM._LOGTAG "Start entry called."
-    return Nothing
+    return noStateTransition
 
 -- |
 --
 instance IStateActivity StartStateData ExitEventData where
   action _ _ = do
     $logDebugS DM._LOGTAG "Start exit called."
-    return Nothing
+    return noStateTransition
 
 -- |
 --
@@ -77,4 +78,31 @@ instance IStateActivity StartStateData ToolsListEventData
 -- |
 --
 instance IStateActivity StartStateData ToolsCallEventData
+  -- @see default implementation in Type module.
+
+-- |
+--
+instance IStateActivity StartStateData PromptsListEventData
+  -- @see default implementation in Type module.
+
+-- |
+--
+instance IStateActivity StartStateData CancelledEventData where
+  action _ dat = do
+    $logInfoS DM._LOGTAG $ T.pack $ "notifications/cancelled called. " ++ show dat
+    return noStateTransition
+
+-- |
+--
+instance IStateActivity StartStateData CompletionCompleteEventData where
+  action _ (CompletionCompleteEvent (CompletionCompleteEventData evDat)) = do
+    $logInfoS DM._LOGTAG $ T.pack $ "CompletionCompleteEvent called. " ++ show evDat
+
+    sendCompletionResponse $ evDat^.DM.jsonrpcMcpCompletionCompleteRequestData
+
+    return noStateTransition
+
+-- |
+--
+instance IStateActivity StartStateData PromptsGetEventData
   -- @see default implementation in Type module.

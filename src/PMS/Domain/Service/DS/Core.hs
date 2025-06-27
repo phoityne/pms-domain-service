@@ -77,9 +77,13 @@ work = await >>= \case
 --
 req2ev :: DM.McpRequest -> AppContext EventW
 req2ev (DM.McpInitializeRequest dat) = pure . EventW . InitializeEvent . InitializeEventData $ dat
-req2ev (DM.McpInitializedNotification dat) = pure . EventW . InitializedEvent . InitializedEventData $ dat
 req2ev (DM.McpToolsListRequest dat) = pure . EventW . ToolsListEvent . ToolsListEventData $ dat
 req2ev (DM.McpToolsCallRequest dat) = pure . EventW . ToolsCallEvent . ToolsCallEventData $ dat
+req2ev (DM.McpPromptsListRequest dat) = pure . EventW . PromptsListEvent . PromptsListEventData $ dat
+req2ev (DM.McpInitializedNotification dat) = pure . EventW . InitializedEvent . InitializedEventData $ dat
+req2ev (DM.McpCancelledNotification dat) = pure . EventW . CancelledEvent . CancelledEventData $ dat
+req2ev (DM.McpCompletionCompleteRequest dat) = pure . EventW . CompletionCompleteEvent . CompletionCompleteEventData $ dat
+req2ev (DM.McpPromptsGetRequest dat) = pure . EventW . PromptsGetEvent . PromptsGetEventData $ dat
 
 ---------------------------------------------------------------------------------
 -- |

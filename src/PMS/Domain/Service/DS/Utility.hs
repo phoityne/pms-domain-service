@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module PMS.Domain.Service.DS.Utility where
 
@@ -11,9 +12,16 @@ import qualified Data.Text.IO as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.ByteString.Lazy as BL
 import System.Directory
+import Control.Monad.Logger
+import qualified Control.Concurrent.STM as STM
+import Control.Lens
+import Data.Default
+import qualified Data.Text as T
 
 import qualified PMS.Domain.Model.DM.Type as DM
 import qualified PMS.Domain.Model.DS.Utility as DM
+import qualified PMS.Domain.Model.DM.Constant as DM
+
 import PMS.Domain.Service.DM.Type
 
 
@@ -74,3 +82,16 @@ isReadable :: FilePath -> AppContext FilePath
 isReadable f = liftIOE (readable <$> getPermissions f) >>= \case
   True  -> return f
   False -> throwError $ "invalid file. not readable." ++ f
+
+-- |
+--
+sendCompletionResponse :: DM.JsonRpcRequest -> AppContext ()
+sendCompletionResponse jsonRpc = do
+  let result = def
+      resDat = DM.McpCompleteResponseData jsonRpc result
+      res = DM.McpCompleteResponse resDat
+
+  $logDebugS DM._LOGTAG $ T.pack $ show res
+
+  queue <- view DM.responseQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue queue res

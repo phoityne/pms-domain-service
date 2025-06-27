@@ -11,6 +11,23 @@ import qualified Data.Text as T
 import qualified PMS.Domain.Model.DM.Type as DM
 import qualified PMS.Domain.Model.DM.Constant as DM
 
+import Data.Aeson
+import qualified Data.Aeson.KeyMap as KM
+import Data.Aeson.Key (toText)
+import Control.Monad (forM)
+
+--------------------------------------------------------------------------------
+-- |
+--
+newtype JsonObjectMap = JsonObjectMap { unJsonObjectMap :: [(String, String)] }
+  deriving (Show)
+
+instance FromJSON JsonObjectMap where
+  parseJSON = withObject "JsonObjectMap" $ \o -> do
+    listPairs <- forM (KM.toList o) $ \(k, v) -> do
+      stringValue <- parseJSON v
+      return (T.unpack (toText k), T.unpack stringValue)
+    return $ JsonObjectMap listPairs
 
 --------------------------------------------------------------------------------
 -- |
@@ -29,13 +46,15 @@ data EntryEventData       = EntryEventData deriving (Show)
 data ExitEventData        = ExitEventData  deriving (Show)
 data TransitEventData     = TransitEventData StateTransition deriving (Show)
 -- doActibity
-data InitializeEventData        = InitializeEventData DM.McpInitializeRequestData deriving (Show)
+data InitializeEventData  = InitializeEventData DM.McpInitializeRequestData deriving (Show)
 data InitializedEventData = InitializedEventData DM.McpInitializedNotificationData deriving (Show)
 data ToolsListEventData   = ToolsListEventData DM.McpToolsListRequestData deriving (Show)
 data ToolsCallEventData   = ToolsCallEventData DM.McpToolsCallRequestData deriving (Show)
-data LaunchEventData      = LaunchEventData Int deriving (Show)
-data DisconnectEventData  = DisconnectEventData Int deriving (Show)
-data TerminateEventData   = TerminateEventData Int  deriving (Show)
+data PromptsListEventData = PromptsListEventData DM.McpPromptsListRequestData deriving (Show)
+data CancelledEventData   = CancelledEventData DM.McpCancelledNotificationData deriving (Show)
+data CompletionCompleteEventData = CompletionCompleteEventData DM.McpCompletionCompleteRequestData deriving (Show)
+data PromptsGetEventData         = PromptsGetEventData DM.McpPromptsGetRequestData deriving (Show)
+
 
 -- |
 --
@@ -48,9 +67,10 @@ data Event r where
   InitializedEvent :: InitializedEventData -> Event InitializedEventData
   ToolsListEvent   :: ToolsListEventData   -> Event ToolsListEventData
   ToolsCallEvent   :: ToolsCallEventData   -> Event ToolsCallEventData
-  LaunchEvent      :: LaunchEventData      -> Event LaunchEventData
-  DisconnectEvent  :: DisconnectEventData  -> Event DisconnectEventData
-  TerminateEvent   :: TerminateEventData   -> Event TerminateEventData
+  PromptsListEvent :: PromptsListEventData -> Event PromptsListEventData
+  CancelledEvent   :: CancelledEventData   -> Event CancelledEventData
+  CompletionCompleteEvent :: CompletionCompleteEventData -> Event CompletionCompleteEventData
+  PromptsGetEvent         :: PromptsGetEventData -> Event PromptsGetEventData
 
 deriving instance Show r => Show (Event r)
 

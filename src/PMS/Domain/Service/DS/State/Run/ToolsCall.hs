@@ -33,14 +33,17 @@ instance IStateActivity RunStateData ToolsCallEventData where
     
     where
       go :: DM.McpToolsCallRequestData -> String -> AppContext ()
-      go dat "pty-connect"   = ptyConnectCommand dat
-      go dat "pty-terminate" = ptyTerminateCommand dat
-      go dat "pty-message"   = ptyMessageCommand dat
-      go dat "pty-bash"      = ptyConnectCommand dat
-      go dat "pty-ssh"       = ptyConnectCommand dat
-      go dat "pty-cabal"     = ptyConnectCommand dat
-      go dat "pty-stack"     = ptyConnectCommand dat
-      go dat "pty-ghci"      = ptyConnectCommand dat
+      go dat "pty-connect"    = ptyConnectCommand dat
+      go dat "pty-terminate"  = ptyTerminateCommand dat
+      go dat "pty-message"    = ptyMessageCommand dat
+      go dat "pty-bash"       = ptyConnectCommand dat
+      go dat "pty-ssh"        = ptyConnectCommand dat
+      go dat "pty-cabal"      = ptyConnectCommand dat
+      go dat "pty-stack"      = ptyConnectCommand dat
+      go dat "pty-ghci"       = ptyConnectCommand dat
+      go dat "proc-spawn"     = procRunCommand dat
+      go dat "proc-terminate" = procTerminateCommand dat
+      go dat "proc-message"   = procMessageCommand dat
       go dat _ = cmdRunCommand dat
 
 
@@ -65,9 +68,7 @@ ptyTerminateCommand :: DM.McpToolsCallRequestData -> AppContext ()
 ptyTerminateCommand dat = do
   resQ <- view DM.responseQueueDomainData <$> lift ask
   let cmdDat = DM.PtyTerminateCommandData {
-                DM._namePtyTerminateCommandData      = dat^.DM.paramsMcpToolsCallRequestData^.DM.nameMcpToolsCallRequestDataParams
-              , DM._argumentsPtyTerminateCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
-              , DM._callbackPtyTerminateCommandData  = callback dat resQ
+                DM._callbackPtyTerminateCommandData  = callback dat resQ
               }
 
   cmdQ <- view DM.commandQueueDomainData <$> lift ask
@@ -80,8 +81,7 @@ ptyMessageCommand :: DM.McpToolsCallRequestData -> AppContext ()
 ptyMessageCommand dat = do
   resQ <- view DM.responseQueueDomainData <$> lift ask
   let cmdDat = DM.PtyMessageCommandData {
-                DM._namePtyMessageCommandData      = dat^.DM.paramsMcpToolsCallRequestData^.DM.nameMcpToolsCallRequestDataParams
-              , DM._argumentsPtyMessageCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+                DM._argumentsPtyMessageCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
               , DM._callbackPtyMessageCommandData  = callback dat resQ
               }
 
@@ -91,7 +91,7 @@ ptyMessageCommand dat = do
 
 -- |
 --
-callback :: DM.McpToolsCallRequestData -> STM.TQueue DM.McpResponse -> DM.SystemCommandCallback ()
+callback :: DM.McpToolsCallRequestData -> STM.TQueue DM.McpResponse -> DM.ToolsCallCommandCallback ()
 callback evDat resQ code outStr errStr = do
   hPutStrLn stderr $ "[INFO] PMS.Domain.Service.DS.State.Run.callback called."
 
@@ -113,20 +113,47 @@ callback evDat resQ code outStr errStr = do
 
 -- |
 --
-cmdRunCommand :: DM.McpToolsCallRequestData -> AppContext ()
-cmdRunCommand dat = do
-  {-
-  resQ <- view DM.responseQueueDomainData <$> lift ask
-  let cmdDat2 = DM.SystemCommandData {
-                DM._nameSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.nameMcpToolsCallRequestDataParams
-              , DM._argumentsSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
-              , DM._callbackSystemCommandData = callback dat resQ
+procRunCommand :: DM.McpToolsCallRequestData -> AppContext ()
+procRunCommand dat = do
+  let cmdDat = DM.ProcRunCommandData {
+                DM._jsonrpcProcRunCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._nameProcRunCommandData      = dat^.DM.paramsMcpToolsCallRequestData^.DM.nameMcpToolsCallRequestDataParams
+              , DM._argumentsProcRunCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
               }
 
-  cmdQ2 <- view DM.commandQueueDomainData <$> lift ask
-  -}
-  -- liftIO $ STM.atomically $ STM.writeTQueue cmdQ2 $ DM.SystemCommand cmdDat2
+  cmdQ <- view DM.procspawnQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcRunCommand cmdDat
 
+
+-- |
+--
+procTerminateCommand :: DM.McpToolsCallRequestData -> AppContext ()
+procTerminateCommand dat = do
+  let cmdDat = DM.ProcTerminateCommandData {
+                DM._jsonrpcProcTerminateCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              }
+
+  cmdQ <- view DM.procspawnQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcTerminateCommand cmdDat
+
+
+-- |
+--
+procMessageCommand :: DM.McpToolsCallRequestData -> AppContext ()
+procMessageCommand dat = do
+  let cmdDat = DM.ProcMessageCommandData {
+                DM._jsonrpcProcMessageCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsProcMessageCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.procspawnQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcMessageCommand cmdDat
+
+
+-- |
+--
+cmdRunCommand :: DM.McpToolsCallRequestData -> AppContext ()
+cmdRunCommand dat = do
   let cmdDat = DM.DefaultCmdRunCommandData {
                 DM._jsonrpcDefaultCmdRunCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
               , DM._nameDefaultCmdRunCommandData      = dat^.DM.paramsMcpToolsCallRequestData^.DM.nameMcpToolsCallRequestDataParams
