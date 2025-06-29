@@ -38,7 +38,7 @@ instance IStateActivity RunStateData ToolsCallEventData where
       go dat "pty-message"    = ptyMessageCommand dat
       go dat "pty-bash"       = ptyConnectCommand dat
       go dat "pty-ssh"        = ptyConnectCommand dat
-      -- go dat "pty-telnet"     = ptyConnectCommand dat
+      go dat "pty-telnet"     = ptyConnectCommand dat
       go dat "pty-cabal"      = ptyConnectCommand dat
       go dat "pty-stack"      = ptyConnectCommand dat
       go dat "pty-ghci"       = ptyConnectCommand dat
