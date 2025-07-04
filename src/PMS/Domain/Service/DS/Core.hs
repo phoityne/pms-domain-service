@@ -80,10 +80,13 @@ req2ev (DM.McpInitializeRequest dat) = pure . EventW . InitializeEvent . Initial
 req2ev (DM.McpToolsListRequest dat) = pure . EventW . ToolsListEvent . ToolsListEventData $ dat
 req2ev (DM.McpToolsCallRequest dat) = pure . EventW . ToolsCallEvent . ToolsCallEventData $ dat
 req2ev (DM.McpPromptsListRequest dat) = pure . EventW . PromptsListEvent . PromptsListEventData $ dat
+req2ev (DM.McpPromptsGetRequest dat) = pure . EventW . PromptsGetEvent . PromptsGetEventData $ dat
+req2ev (DM.McpResourcesTemplatesListRequest dat) = pure . EventW . ResourcesTemplatesListEvent . ResourcesTemplatesListEventData $ dat
+req2ev (DM.McpResourcesListRequest dat) = pure . EventW . ResourcesListEvent . ResourcesListEventData $ dat
+req2ev (DM.McpResourcesReadRequest dat) = pure . EventW . ResourcesReadEvent . ResourcesReadEventData $ dat
 req2ev (DM.McpInitializedNotification dat) = pure . EventW . InitializedEvent . InitializedEventData $ dat
 req2ev (DM.McpCancelledNotification dat) = pure . EventW . CancelledEvent . CancelledEventData $ dat
 req2ev (DM.McpCompletionCompleteRequest dat) = pure . EventW . CompletionCompleteEvent . CompletionCompleteEventData $ dat
-req2ev (DM.McpPromptsGetRequest dat) = pure . EventW . PromptsGetEvent . PromptsGetEventData $ dat
 
 ---------------------------------------------------------------------------------
 -- |

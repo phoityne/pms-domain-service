@@ -51,9 +51,12 @@ data InitializedEventData = InitializedEventData DM.McpInitializedNotificationDa
 data ToolsListEventData   = ToolsListEventData DM.McpToolsListRequestData deriving (Show)
 data ToolsCallEventData   = ToolsCallEventData DM.McpToolsCallRequestData deriving (Show)
 data PromptsListEventData = PromptsListEventData DM.McpPromptsListRequestData deriving (Show)
+data PromptsGetEventData  = PromptsGetEventData DM.McpPromptsGetRequestData deriving (Show)
+data ResourcesTemplatesListEventData = ResourcesTemplatesListEventData DM.McpResourcesTemplatesListRequestData deriving (Show)
+data ResourcesListEventData = ResourcesListEventData DM.McpResourcesListRequestData deriving (Show)
+data ResourcesReadEventData = ResourcesReadEventData DM.McpResourcesReadRequestData deriving (Show)
 data CancelledEventData   = CancelledEventData DM.McpCancelledNotificationData deriving (Show)
 data CompletionCompleteEventData = CompletionCompleteEventData DM.McpCompletionCompleteRequestData deriving (Show)
-data PromptsGetEventData         = PromptsGetEventData DM.McpPromptsGetRequestData deriving (Show)
 
 
 -- |
@@ -68,9 +71,12 @@ data Event r where
   ToolsListEvent   :: ToolsListEventData   -> Event ToolsListEventData
   ToolsCallEvent   :: ToolsCallEventData   -> Event ToolsCallEventData
   PromptsListEvent :: PromptsListEventData -> Event PromptsListEventData
+  PromptsGetEvent  :: PromptsGetEventData -> Event PromptsGetEventData
+  ResourcesTemplatesListEvent :: ResourcesTemplatesListEventData -> Event ResourcesTemplatesListEventData
+  ResourcesListEvent :: ResourcesListEventData -> Event ResourcesListEventData
+  ResourcesReadEvent :: ResourcesReadEventData -> Event ResourcesReadEventData
   CancelledEvent   :: CancelledEventData   -> Event CancelledEventData
   CompletionCompleteEvent :: CompletionCompleteEventData -> Event CompletionCompleteEventData
-  PromptsGetEvent         :: PromptsGetEventData -> Event PromptsGetEventData
 
 deriving instance Show r => Show (Event r)
 

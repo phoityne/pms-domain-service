@@ -19,6 +19,9 @@ import PMS.Domain.Service.DS.State.Run.ToolsList()
 import PMS.Domain.Service.DS.State.Run.ToolsCall()
 import PMS.Domain.Service.DS.State.Run.PromptsList()
 import PMS.Domain.Service.DS.State.Run.PromptsGet()
+import PMS.Domain.Service.DS.State.Run.ResourcesTemplatesList()
+import PMS.Domain.Service.DS.State.Run.ResourcesList()
+import PMS.Domain.Service.DS.State.Run.ResourcesRead()
 
 
 instanceTH_IAppState ''RunStateData

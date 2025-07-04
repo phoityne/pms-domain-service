@@ -14,6 +14,7 @@ import Control.Lens
 import Control.Monad.Reader
 import qualified Control.Concurrent.STM as STM
 import System.Exit
+import qualified Data.Text as T
 
 import qualified PMS.Domain.Model.DM.Type as DM
 import qualified PMS.Domain.Model.DM.Constant as DM
@@ -49,7 +50,15 @@ instance IStateActivity RunStateData ToolsCallEventData where
       -- go dat "proc-telnet"    = procRunCommand dat
       go dat "proc-terminate" = procTerminateCommand dat
       go dat "proc-message"   = procMessageCommand dat
-      go dat _ = cmdRunCommand dat
+      go dat "socket-open"    = socketOpenCommand dat
+      go dat "socket-close"   = socketCloseCommand dat
+      go dat "socket-read"    = socketReadCommand dat
+      go dat "socket-write"   = socketWriteCommand dat
+      go dat "socket-message" = socketMessageCommand dat
+      go dat "socket-telnet"  = socketTelnetCommand dat
+      go dat x = do
+        $logDebugS DM._LOGTAG $ T.pack $ "handled cmdrun. " ++ show x ++ ": " ++ show dat
+        cmdRunCommand dat
 
 
 -- |
@@ -167,3 +176,85 @@ cmdRunCommand dat = do
 
   cmdQ <- view DM.cmdRunQueueDomainData <$> lift ask
   liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.DefaultCmdRunCommand cmdDat
+
+
+-- |
+--
+socketOpenCommand :: DM.McpToolsCallRequestData -> AppContext ()
+socketOpenCommand dat = do
+  let cmdDat = DM.SocketOpenCommandData {
+                DM._jsonrpcSocketOpenCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._nameSocketOpenCommandData      = dat^.DM.paramsMcpToolsCallRequestData^.DM.nameMcpToolsCallRequestDataParams
+              , DM._argumentsSocketOpenCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  $logDebugS DM._LOGTAG $ T.pack $ "socketOpenCommand" ++ show cmdDat
+
+  cmdQ <- view DM.socketQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SocketOpenCommand cmdDat
+
+
+-- |
+--
+socketCloseCommand :: DM.McpToolsCallRequestData -> AppContext ()
+socketCloseCommand dat = do
+  let cmdDat = DM.SocketCloseCommandData {
+                DM._jsonrpcSocketCloseCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              }
+
+  cmdQ <- view DM.socketQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SocketCloseCommand cmdDat
+
+
+-- |
+--
+socketReadCommand :: DM.McpToolsCallRequestData -> AppContext ()
+socketReadCommand dat = do
+  let cmdDat = DM.SocketReadCommandData {
+                DM._jsonrpcSocketReadCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsSocketReadCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.socketQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SocketReadCommand cmdDat
+
+
+-- |
+--
+socketWriteCommand :: DM.McpToolsCallRequestData -> AppContext ()
+socketWriteCommand dat = do
+  let cmdDat = DM.SocketWriteCommandData {
+                DM._jsonrpcSocketWriteCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsSocketWriteCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.socketQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SocketWriteCommand cmdDat
+
+
+-- |
+--
+socketMessageCommand :: DM.McpToolsCallRequestData -> AppContext ()
+socketMessageCommand dat = do
+  let cmdDat = DM.SocketMessageCommandData {
+                DM._jsonrpcSocketMessageCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsSocketMessageCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.socketQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SocketMessageCommand cmdDat
+
+
+-- |
+--
+socketTelnetCommand :: DM.McpToolsCallRequestData -> AppContext ()
+socketTelnetCommand dat = do
+  let cmdDat = DM.SocketTelnetCommandData {
+                DM._jsonrpcSocketTelnetCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._nameSocketTelnetCommandData      = dat^.DM.paramsMcpToolsCallRequestData^.DM.nameMcpToolsCallRequestDataParams
+              , DM._argumentsSocketTelnetCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.socketQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SocketTelnetCommand cmdDat
+

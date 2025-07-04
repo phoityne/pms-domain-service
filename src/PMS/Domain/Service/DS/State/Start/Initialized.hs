@@ -26,13 +26,17 @@ instance IStateActivity StartStateData InitializedEventData where
 
     wq <- view DM.watchQueueDomainData <$> lift ask
 
-    $logDebugS DM._LOGTAG "start watch tools-list.json."
+    $logDebugS DM._LOGTAG "start watch tools."
     let toolCmd = DM.ToolsListWatchCommand DM.ToolsListWatchCommandData
     liftIO $ STM.atomically $ STM.writeTQueue wq toolCmd
     
-    $logDebugS DM._LOGTAG "start watch prompts-list.json."
+    $logDebugS DM._LOGTAG "start watch prompts."
     let promptsCmd = DM.PromptsListWatchCommand DM.PromptsListWatchCommandData
     liftIO $ STM.atomically $ STM.writeTQueue wq promptsCmd
+
+    $logDebugS DM._LOGTAG "start watch resources."
+    let resourcesCmd = DM.ResourcesListWatchCommand DM.ResourcesListWatchCommandData
+    liftIO $ STM.atomically $ STM.writeTQueue wq resourcesCmd
 
     return $ Just StartToRun
 

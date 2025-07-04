@@ -87,6 +87,26 @@ instance IStateActivity StartStateData PromptsListEventData
 
 -- |
 --
+instance IStateActivity StartStateData PromptsGetEventData
+  -- @see default implementation in Type module.
+
+-- |
+--
+instance IStateActivity StartStateData ResourcesTemplatesListEventData
+  -- @see default implementation in Type module.
+
+-- |
+--
+instance IStateActivity StartStateData ResourcesListEventData
+  -- @see default implementation in Type module.
+
+-- |
+--
+instance IStateActivity StartStateData ResourcesReadEventData
+  -- @see default implementation in Type module.
+
+-- |
+--
 instance IStateActivity StartStateData CancelledEventData where
   action _ dat = do
     $logInfoS DM._LOGTAG $ T.pack $ "notifications/cancelled called. " ++ show dat
@@ -102,7 +122,3 @@ instance IStateActivity StartStateData CompletionCompleteEventData where
 
     return noStateTransition
 
--- |
---
-instance IStateActivity StartStateData PromptsGetEventData
-  -- @see default implementation in Type module.
