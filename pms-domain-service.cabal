@@ -56,7 +56,8 @@ extra-doc-files:    README.md,
 
 library
     -- Import common warning flags.
-    ghc-options: -Wall -threaded -Wno-orphans -Wno-x-partial -Wno-gadt-mono-local-binds
+--    ghc-options: -Wall -threaded -Wno-orphans -Wno-x-partial -Wno-gadt-mono-local-binds
+    ghc-options: -Wall -threaded -Wno-orphans -Wno-gadt-mono-local-binds
 
     -- Modules exported by the library.
     exposed-modules:  PMS.Domain.Service.DM.Type,
@@ -85,7 +86,7 @@ library
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.21.0.0,
+    build-depends:    base,
                       transformers,
                       mtl,
                       text,
@@ -115,7 +116,8 @@ library
 
 test-suite pms-domain-service-test
     -- Import common warning flags.
-    ghc-options: -Wall -threaded -Wno-orphans -Wno-x-partial
+    ghc-options: -Wall -threaded -Wno-orphans
+--    ghc-options: -Wall -threaded -Wno-orphans -Wno-x-partial
 
     -- Base language which the package is written in.
     default-language: GHC2021
@@ -136,7 +138,7 @@ test-suite pms-domain-service-test
     main-is:          Spec.hs
 
     -- Test dependencies.
-    build-depends:    base ^>=4.21.0.0,
+    build-depends:    base,
                       hspec,
                       hspec-discover,
                       data-default,
