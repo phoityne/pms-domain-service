@@ -56,6 +56,11 @@ instance IStateActivity RunStateData ToolsCallEventData where
       go dat "socket-write"   = socketWriteCommand dat
       go dat "socket-message" = socketMessageCommand dat
       go dat "socket-telnet"  = socketTelnetCommand dat
+      go dat "serial-open"    = serialOpenCommand dat
+      go dat "serial-close"   = serialCloseCommand dat
+      go dat "serial-read"    = serialReadCommand dat
+      go dat "serial-write"   = serialWriteCommand dat
+      go dat "serial-message" = serialMessageCommand dat
       go dat x = do
         $logDebugS DM._LOGTAG $ T.pack $ "handled cmdrun. " ++ show x ++ ": " ++ show dat
         cmdRunCommand dat
@@ -257,4 +262,71 @@ socketTelnetCommand dat = do
 
   cmdQ <- view DM.socketQueueDomainData <$> lift ask
   liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SocketTelnetCommand cmdDat
+
+
+-- |
+--
+serialOpenCommand :: DM.McpToolsCallRequestData -> AppContext ()
+serialOpenCommand dat = do
+  let cmdDat = DM.SerialOpenCommandData {
+                DM._jsonrpcSerialOpenCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._nameSerialOpenCommandData      = dat^.DM.paramsMcpToolsCallRequestData^.DM.nameMcpToolsCallRequestDataParams
+              , DM._argumentsSerialOpenCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  $logDebugS DM._LOGTAG $ T.pack $ "serialOpenCommand" ++ show cmdDat
+
+  cmdQ <- view DM.serialQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SerialOpenCommand cmdDat
+
+
+-- |
+--
+serialCloseCommand :: DM.McpToolsCallRequestData -> AppContext ()
+serialCloseCommand dat = do
+  let cmdDat = DM.SerialCloseCommandData {
+                DM._jsonrpcSerialCloseCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              }
+
+  cmdQ <- view DM.serialQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SerialCloseCommand cmdDat
+
+
+-- |
+--
+serialReadCommand :: DM.McpToolsCallRequestData -> AppContext ()
+serialReadCommand dat = do
+  let cmdDat = DM.SerialReadCommandData {
+                DM._jsonrpcSerialReadCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsSerialReadCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.serialQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SerialReadCommand cmdDat
+
+
+-- |
+--
+serialWriteCommand :: DM.McpToolsCallRequestData -> AppContext ()
+serialWriteCommand dat = do
+  let cmdDat = DM.SerialWriteCommandData {
+                DM._jsonrpcSerialWriteCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsSerialWriteCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.serialQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SerialWriteCommand cmdDat
+
+
+-- |
+--
+serialMessageCommand :: DM.McpToolsCallRequestData -> AppContext ()
+serialMessageCommand dat = do
+  let cmdDat = DM.SerialMessageCommandData {
+                DM._jsonrpcSerialMessageCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsSerialMessageCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.serialQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SerialMessageCommand cmdDat
 
