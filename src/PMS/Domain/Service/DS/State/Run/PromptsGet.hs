@@ -34,11 +34,11 @@ instance IStateActivity RunStateData PromptsGetEventData where
     $logDebugS DM._LOGTAG $ T.pack $ "Run PromptsGetEvent called." ++ show evDat
 
     let params = evDat^.DM.paramsMcpPromptsGetRequestData
-        name = params^.DM.nameMcpPromptsGetRequestDataParams
+        pname = params^.DM.nameMcpPromptsGetRequestDataParams
         argsBS = DM.unRawJsonByteString $ params^.DM.argumentsMcpPromptsGetRequestDataParams
     
     promptsDir <- view DM.promptsDirDomainData <$> lift ask
-    let promptsFile = name ++ ".md"
+    let promptsFile = pname ++ ".md"
         promptsFilePath = promptsDir </> promptsFile
     
     argsDat <- liftEither $ eitherDecode $ argsBS
