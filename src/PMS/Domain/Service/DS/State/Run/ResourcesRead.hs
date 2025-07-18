@@ -20,6 +20,7 @@ import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 import Network.URI
 import qualified Data.ByteString.Lazy as BL
+import Data.List 
 
 import qualified PMS.Domain.Model.DM.Type as DM
 import qualified PMS.Domain.Model.DM.Constant as DM
@@ -35,8 +36,12 @@ instance IStateActivity RunStateData ResourcesReadEventData where
     $logDebugS DM._LOGTAG $ T.pack $ "Run ResourcesReadEvent called." ++ show evDat
 
     let params = evDat^.DM.paramsMcpResourcesReadRequestData
-    uri <- getURI $ params^.DM.uriMcpResourcesReadRequestDataParams
+        rawUri = params^.DM.uriMcpResourcesReadRequestDataParams
+        normUri = if "://" `isInfixOf` rawUri
+                  then rawUri
+                  else "file://" ++ rawUri
 
+    uri  <- getURI normUri
     cont <- getUriContents uri
 
     response $ TL.unpack $ TLE.decodeUtf8 cont
