@@ -47,7 +47,7 @@ instance IStateActivity RunStateData ToolsCallEventData where
       go dat "proc-cmd"       = procRunCommand dat
       go dat "proc-ps"        = procRunCommand dat
       go dat "proc-ssh"       = procRunCommand dat
-      -- go dat "proc-telnet"    = procRunCommand dat
+      go dat "proc-telnet"    = procRunCommand dat
       go dat "proc-terminate" = procTerminateCommand dat
       go dat "proc-message"   = procMessageCommand dat
       go dat "socket-open"    = socketOpenCommand dat
