@@ -10,14 +10,14 @@ import Control.Monad.Except
 import Control.Monad.Logger
 import Control.Monad.Reader
 import qualified Data.Text as T
-
-import qualified PMS.Domain.Model.DM.Type as DM
-import qualified PMS.Domain.Model.DM.Constant as DM
-
 import Data.Aeson
 import qualified Data.Aeson.KeyMap as KM
 import Data.Aeson.Key (toText)
 import Control.Monad (forM)
+
+import qualified PMS.Domain.Model.DM.Type as DM
+import qualified PMS.Domain.Model.DM.Constant as DM
+
 
 --------------------------------------------------------------------------------
 -- |
@@ -97,8 +97,6 @@ data EventW = forall r. EventW (Event r)
 --
 type AppStateContext = StateT AppStateW (ReaderT DM.DomainData (ExceptT DM.ErrorData (LoggingT IO)))
 type AppContext = AppStateContext
-
--- type AppStateContext = StateT AppStateW IO
 
 -- |
 --

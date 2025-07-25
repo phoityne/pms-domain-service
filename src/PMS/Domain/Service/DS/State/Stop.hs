@@ -46,24 +46,6 @@ instance IStateActivity StopStateData InitializeEventData
 
 -- |
 --
--- instance IStateActivity StopStateData LaunchEventData
-  -- @see default implementation in Type module.
-
--- |
---
--- instance IStateActivity StopStateData DisconnectEventData
-  -- @see default implementation in Type module.
-
--- |
---
-{-
-instance IStateActivity StopStateData TerminateEventData where
-  action _ _ = do
-    $logDebugS DM._LOGTAG "Stop terminate called. will exit."
-    return Nothing
--}
--- |
---
 instance IStateActivity StopStateData InitializedEventData
   -- @see default implementation in Type module.
 

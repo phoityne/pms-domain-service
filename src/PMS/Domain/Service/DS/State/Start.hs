@@ -51,25 +51,6 @@ instance IStateActivity StartStateData ExitEventData where
 instance IStateActivity StartStateData TransitEventData
   -- @see default implementation in Type module.
 
-
--- |
---
-{-
-instance IStateActivity StartStateData InitializedEventData where
-  action _ _ = do
-    $logDebugS DM._LOGTAG "initialized called."
-
-    $logDebugS DM._LOGTAG "start watch tools-list.json."
-    let jsonRpc = dat^.DM.jsonrpcMcpToolsListRequestData
-        cmdDat = DM.ToolsListWatchCommandData jsonRpc
-        cmd = DM.ToolsListWatchCommand cmdDat
-
-    wq <- view DM.watchQueueDomainData <$> lift ask
-    liftIO $ STM.atomically $ STM.writeTQueue wq cmd
-    
-    return $ Just StartToRun
--}
-
 -- |
 --
 instance IStateActivity StartStateData ToolsListEventData
