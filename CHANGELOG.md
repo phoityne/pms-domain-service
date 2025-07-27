@@ -1,5 +1,9 @@
 # Revision history for pms-domain-service
 
+## 0.0.7.0 -- 2025-07-27
+
+* Fixed resources templates.
+
 ## 0.0.6.0 -- 2025-07-20
 
 * Added proc tool.
