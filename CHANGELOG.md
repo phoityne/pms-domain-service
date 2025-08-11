@@ -1,5 +1,9 @@
 # Revision history for pms-domain-service
 
+## 0.0.8.0 -- 2025-08-11
+
+* Fixed encoding.
+
 ## 0.0.7.0 -- 2025-07-27
 
 * Fixed resources templates.
