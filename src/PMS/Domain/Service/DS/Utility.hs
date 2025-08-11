@@ -9,8 +9,9 @@ import Control.Monad.Except
 import Control.Monad.Reader
 import System.Log.FastLogger
 import qualified Control.Exception.Safe as E
-import qualified Data.Text.IO as T
+-- import qualified Data.Text.IO as T
 import qualified Data.Text.Encoding as TE
+import qualified Data.Text.Encoding.Error as TEE
 import qualified Data.ByteString.Lazy as BL
 import System.Directory
 import Control.Monad.Logger
@@ -62,13 +63,21 @@ liftIOE f = liftIO (go f) >>= liftEither
 -- |
 --
 readFile :: FilePath -> AppContext BL.ByteString
-readFile path = isFileExists path
-            >>= isReadable
-            >>= go
+readFile path = do
+  txt <-  readFileText path
+  return $ BL.fromStrict $ TE.encodeUtf8 txt
+
+-- |
+--
+readFileText :: FilePath -> AppContext T.Text
+readFileText path = isFileExists path
+                >>= isReadable
+                >>= go
   where
     go f = liftIOE $ do
-      cont <- T.readFile f
-      return $ BL.fromStrict $ TE.encodeUtf8 cont
+      bytes <- BL.readFile f
+      let txt = TE.decodeUtf8With TEE.lenientDecode (BL.toStrict bytes)
+      return txt
 
 -- |
 --

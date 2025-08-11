@@ -47,7 +47,7 @@ instance IStateActivity RunStateData ToolsListEventData where
     where
       errHdl :: String -> AppContext (Maybe StateTransition)
       errHdl msg = do
-        $logErrorS DM._LOGTAG $ T.pack $ "PromptsListEventData: exception occurred. " ++ msg
+        $logErrorS DM._LOGTAG $ T.pack $ "ToolsListEventData: exception occurred. " ++ msg
         response $ BL8.pack msg
         return noStateTransition
 

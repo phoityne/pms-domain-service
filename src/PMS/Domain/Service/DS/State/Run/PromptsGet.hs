@@ -25,6 +25,7 @@ import qualified PMS.Domain.Model.DM.Type as DM
 import qualified PMS.Domain.Model.DM.Constant as DM
 
 import PMS.Domain.Service.DM.Type
+import qualified PMS.Domain.Service.DS.Utility as U
 
 
 -- |
@@ -40,25 +41,24 @@ instance IStateActivity RunStateData PromptsGetEventData where
     promptsDir <- view DM.promptsDirDomainData <$> lift ask
     let promptsFile = pname ++ ".md"
         promptsFilePath = promptsDir </> promptsFile
-    
+
     argsDat <- liftEither $ eitherDecode $ argsBS
     let args = unJsonObjectMap argsDat
-        
+
     $logDebugS DM._LOGTAG $ T.pack $ "promptsFile : " ++ promptsFile
     $logDebugS DM._LOGTAG $ T.pack $ "promptsFilePath : " ++ promptsFilePath
     $logDebugS DM._LOGTAG $ T.pack $ "arguments : " ++ show args
 
     tmplParams <- liftEither $ eitherDecode $ argsBS
-    tmplTmp <- liftIO $ automaticCompile [promptsDir] promptsFile
-    tmpl <- liftEither $ first show tmplTmp
+
+    tmplText <- U.readFileText promptsFilePath
+    tmpl <- liftEither $ first show $ compileTemplate promptsFile tmplText
+
     let rendered = substitute tmpl (tmplParams :: Aeson.Value)
         cont = T.unpack rendered
-    
-    -- cont <- U.readFile promptsFilePath
-    -- response $ TL.unpack $ TLE.decodeUtf8 cont
 
     response cont
-    
+
     return noStateTransition
 
     where
