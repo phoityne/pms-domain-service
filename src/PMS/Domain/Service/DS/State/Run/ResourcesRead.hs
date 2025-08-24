@@ -44,7 +44,7 @@ instance IStateActivity RunStateData ResourcesReadEventData where
     uri  <- getURI normUri
     cont <- getUriContents uri
 
-    response $ TL.unpack $ TLE.decodeUtf8 cont
+    response normUri $ TL.unpack $ TLE.decodeUtf8 cont
    
     return noStateTransition
 
@@ -52,7 +52,7 @@ instance IStateActivity RunStateData ResourcesReadEventData where
       errHdl :: String -> AppContext (Maybe StateTransition)
       errHdl msg = do
         $logErrorS DM._LOGTAG $ T.pack $ "ResourcesReadEventData: exception occurred. " ++ msg
-        response msg
+        response "" msg
         return noStateTransition
 
       getURI :: String -> AppContext URI
@@ -60,9 +60,12 @@ instance IStateActivity RunStateData ResourcesReadEventData where
         Nothing   -> throwError "Invalid URI, parse fail."
         Just uri  -> return uri
 
-      response :: String -> AppContext ()
-      response cont = do
-        let txtDat = def {DM._textTextResourceContents = cont} 
+      response :: String -> String -> AppContext ()
+      response uri cont = do
+        let txtDat = def {
+                      DM._uriTextResourceContents = uri
+                   ,  DM._textTextResourceContents = cont
+                   } 
             content = encode txtDat
             result = DM.McpResourcesReadResponseResult [DM.RawJsonByteString content]
             jsonRpc = evDat^.DM.jsonrpcMcpResourcesReadRequestData
