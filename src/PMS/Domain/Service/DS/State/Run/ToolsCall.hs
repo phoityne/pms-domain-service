@@ -63,6 +63,9 @@ instance IStateActivity RunStateData ToolsCallEventData where
       go dat "serial-read"    = serialReadCommand dat
       go dat "serial-write"   = serialWriteCommand dat
       go dat "serial-message" = serialMessageCommand dat
+      go dat "pms-dir-list"   = fileSystemDirListCommand dat
+      go dat "pms-read-file"  = fileSystemReadFileCommand dat
+      go dat "pms-write-file" = fileSystemWriteFileCommand dat
       go dat x = do
         $logDebugS DM._LOGTAG $ T.pack $ "handled cmdrun. " ++ show x ++ ": " ++ show dat
         cmdRunCommand dat
@@ -331,3 +334,39 @@ serialMessageCommand dat = do
   cmdQ <- view DM.serialQueueDomainData <$> lift ask
   liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.SerialMessageCommand cmdDat
 
+
+-- |
+--
+fileSystemDirListCommand :: DM.McpToolsCallRequestData -> AppContext ()
+fileSystemDirListCommand dat = do
+  let cmdDat = DM.DirListFileSystemCommandData {
+                DM._jsonrpcDirListFileSystemCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsDirListFileSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.fileSystemQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.DirListFileSystemCommand cmdDat
+
+-- |
+--
+fileSystemReadFileCommand :: DM.McpToolsCallRequestData -> AppContext ()
+fileSystemReadFileCommand dat = do
+  let cmdDat = DM.ReadFileFileSystemCommandData {
+                DM._jsonrpcReadFileFileSystemCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsReadFileFileSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.fileSystemQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ReadFileFileSystemCommand cmdDat
+
+-- |
+--
+fileSystemWriteFileCommand :: DM.McpToolsCallRequestData -> AppContext ()
+fileSystemWriteFileCommand dat = do
+  let cmdDat = DM.WriteFileFileSystemCommandData {
+                DM._jsonrpcWriteFileFileSystemCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsWriteFileFileSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.fileSystemQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.WriteFileFileSystemCommand cmdDat

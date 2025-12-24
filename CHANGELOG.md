@@ -1,5 +1,9 @@
 # Revision history for pms-domain-service
 
+## 0.1.0.0 -- 2025-12-31
+
+* Add file system tools.
+
 ## 0.0.9.0 -- 2025-08-24
 
 * Fixed exception handle.
