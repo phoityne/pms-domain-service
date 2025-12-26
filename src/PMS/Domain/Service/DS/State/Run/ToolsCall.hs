@@ -63,7 +63,7 @@ instance IStateActivity RunStateData ToolsCallEventData where
       go dat "serial-read"    = serialReadCommand dat
       go dat "serial-write"   = serialWriteCommand dat
       go dat "serial-message" = serialMessageCommand dat
-      go dat "pms-dir-list"   = fileSystemDirListCommand dat
+      go dat "pms-list-dir"   = fileSystemListDirCommand dat
       go dat "pms-read-file"  = fileSystemReadFileCommand dat
       go dat "pms-write-file" = fileSystemWriteFileCommand dat
       go dat x = do
@@ -337,15 +337,15 @@ serialMessageCommand dat = do
 
 -- |
 --
-fileSystemDirListCommand :: DM.McpToolsCallRequestData -> AppContext ()
-fileSystemDirListCommand dat = do
-  let cmdDat = DM.DirListFileSystemCommandData {
-                DM._jsonrpcDirListFileSystemCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
-              , DM._argumentsDirListFileSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+fileSystemListDirCommand :: DM.McpToolsCallRequestData -> AppContext ()
+fileSystemListDirCommand dat = do
+  let cmdDat = DM.ListDirFileSystemCommandData {
+                DM._jsonrpcListDirFileSystemCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsListDirFileSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
               }
 
   cmdQ <- view DM.fileSystemQueueDomainData <$> lift ask
-  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.DirListFileSystemCommand cmdDat
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ListDirFileSystemCommand cmdDat
 
 -- |
 --
