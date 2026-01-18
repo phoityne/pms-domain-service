@@ -1,5 +1,9 @@
 # Revision history for pms-domain-service
 
+## 0.1.1.0 -- 2026-01-31
+
+* Add file system pms-make-dir tools.
+
 ## 0.1.0.0 -- 2025-12-31
 
 * Add file system tools.
