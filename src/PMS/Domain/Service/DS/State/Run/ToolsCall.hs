@@ -52,8 +52,8 @@ instance IStateActivity RunStateData ToolsCallEventData where
       go dat "proc-plink"     = procRunCommand dat
       go dat "proc-terminate" = procTerminateCommand dat
       go dat "proc-message"   = procMessageCommand dat
-      go dat "proc-async-read"  = procAsyncReadCommand dat
-      go dat "proc-async-write" = procAsyncWriteCommand dat
+      go dat "proc-read"      = procReadCommand dat
+      go dat "proc-write"     = procWriteCommand dat
       go dat "socket-open"    = socketOpenCommand dat
       go dat "socket-close"   = socketCloseCommand dat
       go dat "socket-read"    = socketReadCommand dat
@@ -179,27 +179,27 @@ procMessageCommand dat = do
 
 -- |
 --
-procAsyncReadCommand :: DM.McpToolsCallRequestData -> AppContext ()
-procAsyncReadCommand dat = do
-  let cmdDat = DM.ProcAsyncReadCommandData {
-                DM._jsonrpcProcAsyncReadCommandData = dat^.DM.jsonrpcMcpToolsCallRequestData
+procReadCommand :: DM.McpToolsCallRequestData -> AppContext ()
+procReadCommand dat = do
+  let cmdDat = DM.ProcReadCommandData {
+                DM._jsonrpcProcReadCommandData = dat^.DM.jsonrpcMcpToolsCallRequestData
               }
 
   cmdQ <- view DM.procspawnQueueDomainData <$> lift ask
-  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcAsyncReadCommand cmdDat
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcReadCommand cmdDat
 
 
 -- |
 --
-procAsyncWriteCommand :: DM.McpToolsCallRequestData -> AppContext ()
-procAsyncWriteCommand dat = do
-  let cmdDat = DM.ProcAsyncWriteCommandData {
-                DM._jsonrpcProcAsyncWriteCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
-              , DM._argumentsProcAsyncWriteCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+procWriteCommand :: DM.McpToolsCallRequestData -> AppContext ()
+procWriteCommand dat = do
+  let cmdDat = DM.ProcWriteCommandData {
+                DM._jsonrpcProcWriteCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsProcWriteCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
               }
 
   cmdQ <- view DM.procspawnQueueDomainData <$> lift ask
-  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcAsyncWriteCommand cmdDat
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcWriteCommand cmdDat
 
 
 -- |
