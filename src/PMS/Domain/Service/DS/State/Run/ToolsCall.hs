@@ -52,6 +52,8 @@ instance IStateActivity RunStateData ToolsCallEventData where
       go dat "proc-plink"     = procRunCommand dat
       go dat "proc-terminate" = procTerminateCommand dat
       go dat "proc-message"   = procMessageCommand dat
+      go dat "proc-async-read"  = procAsyncReadCommand dat
+      go dat "proc-async-write" = procAsyncWriteCommand dat
       go dat "socket-open"    = socketOpenCommand dat
       go dat "socket-close"   = socketCloseCommand dat
       go dat "socket-read"    = socketReadCommand dat
@@ -173,6 +175,31 @@ procMessageCommand dat = do
 
   cmdQ <- view DM.procspawnQueueDomainData <$> lift ask
   liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcMessageCommand cmdDat
+
+
+-- |
+--
+procAsyncReadCommand :: DM.McpToolsCallRequestData -> AppContext ()
+procAsyncReadCommand dat = do
+  let cmdDat = DM.ProcAsyncReadCommandData {
+                DM._jsonrpcProcAsyncReadCommandData = dat^.DM.jsonrpcMcpToolsCallRequestData
+              }
+
+  cmdQ <- view DM.procspawnQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcAsyncReadCommand cmdDat
+
+
+-- |
+--
+procAsyncWriteCommand :: DM.McpToolsCallRequestData -> AppContext ()
+procAsyncWriteCommand dat = do
+  let cmdDat = DM.ProcAsyncWriteCommandData {
+                DM._jsonrpcProcAsyncWriteCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsProcAsyncWriteCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.procspawnQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcAsyncWriteCommand cmdDat
 
 
 -- |

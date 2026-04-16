@@ -1,5 +1,9 @@
 # Revision history for pms-domain-service
 
+## 0.1.2.0 -- 2026-04-30
+
+* Add async read/write tools.
+
 ## 0.1.1.0 -- 2026-01-31
 
 * Add file system pms-make-dir tools.
