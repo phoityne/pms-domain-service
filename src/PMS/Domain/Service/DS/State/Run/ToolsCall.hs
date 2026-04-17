@@ -182,7 +182,8 @@ procMessageCommand dat = do
 procReadCommand :: DM.McpToolsCallRequestData -> AppContext ()
 procReadCommand dat = do
   let cmdDat = DM.ProcReadCommandData {
-                DM._jsonrpcProcReadCommandData = dat^.DM.jsonrpcMcpToolsCallRequestData
+                DM._jsonrpcProcReadCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsProcReadCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
               }
 
   cmdQ <- view DM.procspawnQueueDomainData <$> lift ask
