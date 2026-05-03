@@ -34,41 +34,45 @@ instance IStateActivity RunStateData ToolsCallEventData where
     
     where
       go :: DM.McpToolsCallRequestData -> String -> AppContext ()
-      go dat "pty-connect"    = ptyConnectCommand dat
-      go dat "pty-terminate"  = ptyTerminateCommand dat
-      go dat "pty-message"    = ptyMessageCommand dat
-      go dat "pty-bash"       = ptyConnectCommand dat
-      go dat "pty-ssh"        = ptyConnectCommand dat
-      go dat "pty-telnet"     = ptyConnectCommand dat
-      go dat "pty-cabal"      = ptyConnectCommand dat
-      go dat "pty-stack"      = ptyConnectCommand dat
-      go dat "pty-ghci"       = ptyConnectCommand dat
-      go dat "proc-spawn"     = procRunCommand dat
-      go dat "proc-cmd"       = procRunCommand dat
-      go dat "proc-ps"        = procRunCommand dat
-      go dat "proc-ssh"       = procRunCommand dat
-      go dat "proc-telnet"    = procRunCommand dat
+      go dat "pty-connect"       = ptyConnectCommand dat
+      go dat "pty-terminate"     = ptyTerminateCommand dat
+      go dat "pty-message"       = ptyMessageCommand dat
+      go dat "pty-bash"          = ptyConnectCommand dat
+      go dat "pty-ssh"           = ptyConnectCommand dat
+      go dat "pty-telnet"        = ptyConnectCommand dat
+      go dat "pty-cabal"         = ptyConnectCommand dat
+      go dat "pty-stack"         = ptyConnectCommand dat
+      go dat "pty-ghci"          = ptyConnectCommand dat
+      go dat "proc-spawn"        = procRunCommand dat
+      go dat "proc-cmd"          = procRunCommand dat
+      go dat "proc-ps"           = procRunCommand dat
+      go dat "proc-ssh"          = procRunCommand dat
+      go dat "proc-telnet"       = procRunCommand dat
       -- go dat "proc-winpty"    = procRunCommand dat
-      go dat "proc-plink"     = procRunCommand dat
-      go dat "proc-terminate" = procTerminateCommand dat
-      go dat "proc-message"   = procMessageCommand dat
-      go dat "proc-read"      = procReadCommand dat
-      go dat "proc-write"     = procWriteCommand dat
-      go dat "socket-open"    = socketOpenCommand dat
-      go dat "socket-close"   = socketCloseCommand dat
-      go dat "socket-read"    = socketReadCommand dat
-      go dat "socket-write"   = socketWriteCommand dat
-      go dat "socket-message" = socketMessageCommand dat
-      go dat "socket-telnet"  = socketTelnetCommand dat
-      go dat "serial-open"    = serialOpenCommand dat
-      go dat "serial-close"   = serialCloseCommand dat
-      go dat "serial-read"    = serialReadCommand dat
-      go dat "serial-write"   = serialWriteCommand dat
-      go dat "serial-message" = serialMessageCommand dat
-      go dat "pms-list-dir"   = fileSystemListDirCommand dat
-      go dat "pms-make-dir"   = fileSystemMakeDirCommand dat
-      go dat "pms-read-file"  = fileSystemReadFileCommand dat
-      go dat "pms-write-file" = fileSystemWriteFileCommand dat
+      go dat "proc-plink"        = procRunCommand dat
+      go dat "proc-terminate"    = procTerminateCommand dat
+      go dat "proc-message"      = procMessageCommand dat
+      go dat "proc-read"         = procReadCommand dat
+      go dat "proc-write"        = procWriteCommand dat
+      go dat "agent-proc-run"       = agentProcRunCommand dat
+      go dat "agent-proc-read"      = agentProcReadCommand dat
+      go dat "agent-proc-write"     = agentProcWriteCommand dat
+      go dat "agent-proc-terminate" = agentProcTerminateCommand dat
+      go dat "socket-open"       = socketOpenCommand dat
+      go dat "socket-close"      = socketCloseCommand dat
+      go dat "socket-read"       = socketReadCommand dat
+      go dat "socket-write"      = socketWriteCommand dat
+      go dat "socket-message"    = socketMessageCommand dat
+      go dat "socket-telnet"     = socketTelnetCommand dat
+      go dat "serial-open"       = serialOpenCommand dat
+      go dat "serial-close"      = serialCloseCommand dat
+      go dat "serial-read"       = serialReadCommand dat
+      go dat "serial-write"      = serialWriteCommand dat
+      go dat "serial-message"    = serialMessageCommand dat
+      go dat "pms-list-dir"      = fileSystemListDirCommand dat
+      go dat "pms-make-dir"      = fileSystemMakeDirCommand dat
+      go dat "pms-read-file"     = fileSystemReadFileCommand dat
+      go dat "pms-write-file"    = fileSystemWriteFileCommand dat
       go dat x = do
         $logDebugS DM._LOGTAG $ T.pack $ "handled cmdrun. " ++ show x ++ ": " ++ show dat
         cmdRunCommand dat
@@ -201,6 +205,54 @@ procWriteCommand dat = do
 
   cmdQ <- view DM.procspawnQueueDomainData <$> lift ask
   liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ProcWriteCommand cmdDat
+
+
+-- |
+--
+agentProcRunCommand :: DM.McpToolsCallRequestData -> AppContext ()
+agentProcRunCommand dat = do
+  let cmdDat = DM.AgentProcessRunCommandData {
+                DM._jsonrpcAgentProcessRunCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._nameAgentProcessRunCommandData      = dat^.DM.paramsMcpToolsCallRequestData^.DM.nameMcpToolsCallRequestDataParams
+              , DM._argumentsAgentProcessRunCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+  cmdQ <- view DM.agentProcessQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.AgentProcessRunCommand cmdDat
+
+
+-- |
+--
+agentProcTerminateCommand :: DM.McpToolsCallRequestData -> AppContext ()
+agentProcTerminateCommand dat = do
+  let cmdDat = DM.AgentProcessTerminateCommandData {
+                DM._jsonrpcAgentProcessTerminateCommandData = dat^.DM.jsonrpcMcpToolsCallRequestData
+              }
+  cmdQ <- view DM.agentProcessQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.AgentProcessTerminateCommand cmdDat
+
+
+-- |
+--
+agentProcReadCommand :: DM.McpToolsCallRequestData -> AppContext ()
+agentProcReadCommand dat = do
+  let cmdDat = DM.AgentProcessReadCommandData {
+                DM._jsonrpcAgentProcessReadCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsAgentProcessReadCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+  cmdQ <- view DM.agentProcessQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.AgentProcessReadCommand cmdDat
+
+
+-- |
+--
+agentProcWriteCommand :: DM.McpToolsCallRequestData -> AppContext ()
+agentProcWriteCommand dat = do
+  let cmdDat = DM.AgentProcessWriteCommandData {
+                DM._jsonrpcAgentProcessWriteCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsAgentProcessWriteCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+  cmdQ <- view DM.agentProcessQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.AgentProcessWriteCommand cmdDat
 
 
 -- |
