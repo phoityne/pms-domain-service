@@ -73,6 +73,10 @@ instance IStateActivity RunStateData ToolsCallEventData where
       go dat "pms-make-dir"      = fileSystemMakeDirCommand dat
       go dat "pms-read-file"     = fileSystemReadFileCommand dat
       go dat "pms-write-file"    = fileSystemWriteFileCommand dat
+      go dat "pms-patch-file"    = fileSystemPatchFileCommand dat
+      go dat "pms-file-info"     = fileSystemFileInfoCommand dat
+      go dat "pms-grep-file"     = fileSystemGrepFileCommand dat
+      go dat "pms-replace-file"  = fileSystemReplaceFileCommand dat
       go dat x = do
         $logDebugS DM._LOGTAG $ T.pack $ "handled cmdrun. " ++ show x ++ ": " ++ show dat
         cmdRunCommand dat
@@ -465,3 +469,55 @@ fileSystemWriteFileCommand dat = do
 
   cmdQ <- view DM.fileSystemQueueDomainData <$> lift ask
   liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.WriteFileFileSystemCommand cmdDat
+
+
+-- |
+--
+fileSystemPatchFileCommand :: DM.McpToolsCallRequestData -> AppContext ()
+fileSystemPatchFileCommand dat = do
+  let cmdDat = DM.PatchFileFileSystemCommandData {
+                DM._jsonrpcPatchFileFileSystemCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsPatchFileFileSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.fileSystemQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.PatchFileFileSystemCommand cmdDat
+
+
+-- |
+--
+fileSystemFileInfoCommand :: DM.McpToolsCallRequestData -> AppContext ()
+fileSystemFileInfoCommand dat = do
+  let cmdDat = DM.FileInfoFileSystemCommandData {
+                DM._jsonrpcFileInfoFileSystemCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsFileInfoFileSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.fileSystemQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.FileInfoFileSystemCommand cmdDat
+
+
+-- |
+--
+fileSystemGrepFileCommand :: DM.McpToolsCallRequestData -> AppContext ()
+fileSystemGrepFileCommand dat = do
+  let cmdDat = DM.GrepFileFileSystemCommandData {
+                DM._jsonrpcGrepFileFileSystemCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsGrepFileFileSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.fileSystemQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.GrepFileFileSystemCommand cmdDat
+
+
+-- |
+--
+fileSystemReplaceFileCommand :: DM.McpToolsCallRequestData -> AppContext ()
+fileSystemReplaceFileCommand dat = do
+  let cmdDat = DM.ReplaceFileFileSystemCommandData {
+                DM._jsonrpcReplaceFileFileSystemCommandData   = dat^.DM.jsonrpcMcpToolsCallRequestData
+              , DM._argumentsReplaceFileFileSystemCommandData = dat^.DM.paramsMcpToolsCallRequestData^.DM.argumentsMcpToolsCallRequestDataParams
+              }
+
+  cmdQ <- view DM.fileSystemQueueDomainData <$> lift ask
+  liftIO $ STM.atomically $ STM.writeTQueue cmdQ $ DM.ReplaceFileFileSystemCommand cmdDat

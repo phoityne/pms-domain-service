@@ -1,5 +1,9 @@
 # Revision history for pms-domain-service
 
+## 0.1.4.0 -- 2026-05-15
+
+* Add file system tools.
+
 ## 0.1.3.0 -- 2026-05-05
 
 * Add agent-proc tools (agent-proc-run, agent-proc-read, agent-proc-write, agent-proc-terminate).
